@@ -98,7 +98,7 @@ export async function listarTodosUsuarios(usuario_logado_id: number): Promise<vo
     });
 }
 
-export async function listarUsuarioID(id: string, usuario_logado_id: number): Promise<void> {
+export async function listarUsuarioID(id: number, usuario_logado_id: number): Promise<void> {
     const query = `
     SELECT * FROM Usuarios WHERE id = ?
     `;
@@ -117,8 +117,8 @@ export async function listarUsuarioID(id: string, usuario_logado_id: number): Pr
     });
 }
 
-export async function deletarUsuario(id: string, usuario_logado_id: number): Promise<void> {
-    if (id === '1') {
+export async function deletarUsuario(id: number, usuario_logado_id: number): Promise<void> {
+    if (id === 1) {
         console.log(`Erro: Usuario protegido não pode ser deletado!`);
         await inserirLog(`Tentativa de deletar Usuario administrador!`, usuario_logado_id);
         return Promise.resolve();
