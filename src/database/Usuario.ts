@@ -1,6 +1,7 @@
 import { db } from ".."
 import { usuarioSchema } from "../validation/usuarios";
 import { usuarios } from "../interface/usuarios";
+import { gerarHashSenha } from "../security/senha";
 
 //Criar a tabela de Usuarios
 export async function criarTabelaUsuario(): Promise<void> {
@@ -20,14 +21,15 @@ export async function criarTabelaUsuario(): Promise<void> {
                 reject(erro);
             } else {
                 //verifica se já existe um usuario administrador
-                db.get("SELECT id FROM Usuarios WHERE email = ?", ['admin.master@email.com'], (erro, linha) => {
+                db.get("SELECT id FROM Usuarios WHERE email = ?", ['admin.master@email.com'], async (erro, linha) => {
                     if (erro) {
                         console.error(`Erro ao verificar administrador: ${erro}`);
                         reject(erro);
                     } else if (!linha) {
                         //se não existir, cria um usuario com credenciais administrador junto da criação da tabela
+                        const senhaAdminHash = await gerarHashSenha('AdminMaster');
                         const insertQuery = "INSERT INTO Usuarios (nome, email, senha) VALUES (?, ?, ?);";
-                        db.run(insertQuery, ['Administrador', 'admin.master@email.com', 'AdminMaster'], (erro) => {
+                        db.run(insertQuery, ['Administrador', 'admin.master@email.com', senhaAdminHash], (erro) => {
                             if (erro) {
                                 console.error(`Erro ao inserir administrador: ${erro}`);
                                 reject(erro);
@@ -57,13 +59,14 @@ export async function cadastrarUsuario(nome: string, email: string, senha: strin
         validar.error.errors.forEach(e => console.log(e.message))
         return;
     }
+    const senhaHash = await gerarHashSenha(senha);
 
     const query = `
         INSERT INTO Usuarios (nome, email, senha)
         VALUES (?, ?, ?);
     `;
     return new Promise<void>((resolve, reject) => {
-        db.run(query, [nome, email, senha], async (erro) => {
+        db.run(query, [nome, email, senhaHash], async (erro) => {
             if (erro) {
                 console.error(`Erro ao cadastrar Usuario: ${erro}`);
                 reject(erro);
@@ -115,6 +118,7 @@ export async function editarUsuario(id: number, nome: string, email: string, sen
         console.log(`Erro: Usuario protegido não pode ser editado!`);
         return false;
     }
+
     let usuarioExistente: any[] = [];
     const queryLocalizar = `
         SELECT * FROM Usuarios WHERE id = ?
@@ -133,20 +137,30 @@ export async function editarUsuario(id: number, nome: string, email: string, sen
             }
         });
     });
+
     if (usuarioExistente.length === 0) {
         return false;
     }
+
     let vamosEditar = {
         nome: nome && nome.trim() ? nome : usuarioExistente[0].nome,
         email: email && email.trim() ? email : usuarioExistente[0].email,
         senha: senha && senha.trim() ? senha : usuarioExistente[0].senha
     };
+
     let validar = usuarioSchema.safeParse(vamosEditar);
     if (!validar.success) {
         validar.error.errors.forEach(e => console.log(e.message))
         return false;
     }
-    
+
+    if (senha && senha.trim() && senha !== usuarioExistente[0].senha) {
+        vamosEditar.senha = await gerarHashSenha(senha);
+    } else {
+        vamosEditar.senha = usuarioExistente[0].senha;
+    }
+
+
     return new Promise<boolean>((resolve, reject) => {
         const querySalvarEdicao = `
             UPDATE Usuarios
@@ -154,7 +168,7 @@ export async function editarUsuario(id: number, nome: string, email: string, sen
             WHERE id = ?
         `;
         db.run(querySalvarEdicao, [vamosEditar.nome, vamosEditar.email, vamosEditar.senha, id], async (erro) => {
-            if(erro) {
+            if (erro) {
                 console.error(`Erro ao atualizar dados do Usuario: ${erro}`);
                 reject(erro);
             } else {

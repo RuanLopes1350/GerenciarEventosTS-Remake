@@ -1,5 +1,7 @@
 import { perguntar } from ".."
 import { db } from ".."
+import bcrypt from 'bcrypt';
+
 export let usuarioLogado: any = null
 //funções para logar no BD
 export const logarNoBancoDeDados = async (): Promise<boolean> => {
@@ -32,13 +34,18 @@ export const logarNoBancoDeDados = async (): Promise<boolean> => {
 
     while (!senhaCorreta) {
         senhaDigitada = await perguntar('Por favor, informe sua senha: ')
-        if (senhaDigitada !== usuarioLogado.senha) {
+        
+        // Verificando a senha com bcrypt
+        const senhaValida = await bcrypt.compare(senhaDigitada, usuarioLogado.senha);
+
+        if (!senhaValida) {
             console.error('Senha incorreta!')
             continue
         } else {
             senhaCorreta = true
         }
     };
+
     console.log(`Bem Vindo ${usuarioLogado.nome}!`)
     return true
 }
