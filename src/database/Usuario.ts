@@ -1,6 +1,6 @@
 import { db } from ".."
 import { usuarioSchema } from "../validation/usuarios";
-import { inserirLog } from "./funcoesSQLITELogs"
+import { usuarios } from "../interface/usuarios";
 
 //Criar a tabela de Usuarios
 export async function criarTabelaUsuario(): Promise<void> {
@@ -51,7 +51,6 @@ export async function cadastrarUsuario(nome: string, email: string, senha: strin
 
     if (nome.toLowerCase() === 'administrador' || nome.toLocaleLowerCase() === 'admin') {
         console.log('Erro ao cadastrar usuario! Termos não autorizados!')
-        await inserirLog('Tentativa bloqueada de cadastrar um novo administrador!', usuario_logado_id)
         return
     }
     if (!validar.success) {
@@ -66,11 +65,9 @@ export async function cadastrarUsuario(nome: string, email: string, senha: strin
     return new Promise<void>((resolve, reject) => {
         db.run(query, [nome, email, senha], async (erro) => {
             if (erro) {
-                await inserirLog(`Erro ao cadastrar Usuario: ${erro.message}`, usuario_logado_id)
                 console.error(`Erro ao cadastrar Usuario: ${erro}`);
                 reject(erro);
             } else {
-                await inserirLog(`Usuario ${nome} cadastrado com sucesso!`, usuario_logado_id)
                 console.log(`Usuario cadastrado com sucesso!`);
                 resolve();
             }
@@ -87,18 +84,16 @@ export async function listarTodosUsuarios(usuario_logado_id: number): Promise<vo
         db.all(query, async (erro, linhas) => {
             if (erro) {
                 console.log(`Erro ao listar Usuarios ${erro}`);
-                await inserirLog(`Erro ao listar Usuarios: ${erro.message}`, usuario_logado_id);
                 reject(erro);
             } else {
                 console.table(linhas);
-                await inserirLog('Listando todos os Usuarios', usuario_logado_id);
                 resolve();
             }
         });
     });
 }
 
-export async function listarUsuarioID(id: number, usuario_logado_id: number): Promise<void> {
+export async function localizarUsuario(id: number, usuario_logado_id: number): Promise<boolean> {
     const query = `
     SELECT * FROM Usuarios WHERE id = ?
     `;
@@ -106,12 +101,66 @@ export async function listarUsuarioID(id: number, usuario_logado_id: number): Pr
         db.get(query, [id], async (erro, linha) => {
             if (erro) {
                 console.log(`Erro ao listar Usuario: ${erro}`);
-                await inserirLog(`Erro ao listar Usuario com ID ${id}: ${erro.message}`, usuario_logado_id);
                 reject(erro);
             } else {
                 console.table(linha);
-                await inserirLog(`Listar Usuario com ID ${id}`, usuario_logado_id);
+                resolve(true);
+            }
+        });
+    });
+}
+
+export async function editarUsuario(id: number, nome: string, email: string, senha: string, usuario_logado_id: number): Promise<boolean> {
+    if (id === 1) {
+        console.log(`Erro: Usuario protegido não pode ser editado!`);
+        return false;
+    }
+    let usuarioExistente: any[] = [];
+    const queryLocalizar = `
+        SELECT * FROM Usuarios WHERE id = ?
+    `;
+    const usuario = await new Promise<void>((resolve, reject) => {
+        db.get(queryLocalizar, [id], (erro, linha) => {
+            if (erro) {
+                console.error(`Erro ao localizar usuario: ${erro}`);
+                reject(erro);
+            } else if (!linha) {
+                console.log('Usuario não encontrado. Verifique se o ID está correto e tente novamente!');
                 resolve();
+            } else {
+                usuarioExistente.push(linha);
+                resolve();
+            }
+        });
+    });
+    if (usuarioExistente.length === 0) {
+        return false;
+    }
+    let vamosEditar = {
+        nome: nome && nome.trim() ? nome : usuarioExistente[0].nome,
+        email: email && email.trim() ? email : usuarioExistente[0].email,
+        senha: senha && senha.trim() ? senha : usuarioExistente[0].senha
+    };
+    let validar = usuarioSchema.safeParse(vamosEditar);
+    if (!validar.success) {
+        validar.error.errors.forEach(e => console.log(e.message))
+        return false;
+    }
+    
+    return new Promise<boolean>((resolve, reject) => {
+        const querySalvarEdicao = `
+            UPDATE Usuarios
+            SET nome = ?, email = ?, senha = ?
+            WHERE id = ?
+        `;
+        db.run(querySalvarEdicao, [vamosEditar.nome, vamosEditar.email, vamosEditar.senha, id], async (erro) => {
+            if(erro) {
+                console.error(`Erro ao atualizar dados do Usuario: ${erro}`);
+                reject(erro);
+            } else {
+                console.log('Usuario Atualizado com sucesso!');
+                console.table(vamosEditar);
+                resolve(true);
             }
         });
     });
@@ -120,7 +169,6 @@ export async function listarUsuarioID(id: number, usuario_logado_id: number): Pr
 export async function deletarUsuario(id: number, usuario_logado_id: number): Promise<void> {
     if (id === 1) {
         console.log(`Erro: Usuario protegido não pode ser deletado!`);
-        await inserirLog(`Tentativa de deletar Usuario administrador!`, usuario_logado_id);
         return Promise.resolve();
     }
 
@@ -131,11 +179,9 @@ export async function deletarUsuario(id: number, usuario_logado_id: number): Pro
         db.run(query, [id], async (erro) => {
             if (erro) {
                 console.log(`Erro ao deletar Usuario: ${erro}`);
-                await inserirLog(`Erro ao deletar Usuario com ID ${id}: ${erro.message}`, usuario_logado_id);
                 reject(erro);
             } else {
                 console.log(`Usuario deletado com sucesso!`);
-                await inserirLog(`Usuario com ID ${id} deletado com sucesso!`, usuario_logado_id);
                 resolve();
             }
         });

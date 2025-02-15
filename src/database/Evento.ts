@@ -1,7 +1,6 @@
 import { db } from ".."
 import { eventoSchema } from "../validation/eventos";
-import { usuarioLogado } from "./funcaoSQLiteLogar";
-import { inserirLog } from "./funcoesSQLITELogs"
+import { usuarioLogado } from "./Login";
 
 export async function criarTabelaEventos(): Promise<void> {
     const query = `
@@ -35,11 +34,9 @@ export async function inserirEvento(nome: string, data: string, usuario_id: numb
     return new Promise((resolve, reject) => {
         db.run(query, [nome, data, usuario_id], async (erro) => {
             if (erro) {
-                await inserirLog(`Erro ao inserir Evento!`,usuario_id)
                 console.error(`Erro ao inserir evento: ${erro}`);
                 reject(erro);
             } else {
-                await inserirLog(`Evento ${nome} cadastrado!`,usuario_id)
                 console.log(`Evento inserido com sucesso!`);
                 resolve();
             }
@@ -60,11 +57,9 @@ export async function listarEventos(usuario_logado_id: number): Promise<void> {
     return new Promise((resolve, reject) => {
         db.all(query, async (erro, linhas) => {
             if (erro) {
-                await inserirLog('Erro ao listar eventos!',usuario_logado_id)
                 console.error(`Erro ao listar eventos: ${erro}`);
                 reject(erro);
             } else {
-                await inserirLog('Listando todos os Eventos',usuario_logado_id)
                 console.table(linhas);
                 resolve();
             }
@@ -72,7 +67,7 @@ export async function listarEventos(usuario_logado_id: number): Promise<void> {
     });
 }
 
-export async function listarEventoID(id: number, usuario_logado_id: number): Promise<void> {
+export async function localizarEvento(id: number, usuario_logado_id: number): Promise<boolean> {
     const query = `
         SELECT
             Eventos.id as "Código do Evento",
@@ -86,12 +81,62 @@ export async function listarEventoID(id: number, usuario_logado_id: number): Pro
     return new Promise((resolve, reject) => {
         db.get(query, [id], async (erro, linha) => {
             if (erro) {
-                await inserirLog('Erro ao listar evento por ID!',usuario_logado_id)
                 console.error(`Erro ao listar evento: ${erro}`);
                 reject(erro);
             } else {
-                await inserirLog('Listando Evento por ID!',usuario_logado_id)
                 console.table(linha);
+                resolve(true);
+            }
+        });
+    });
+}
+
+export async function editarEvento(id: number, nome: string, data: string, usuario_ID: number, usuario_logado_id: number) {
+    let eventoExistente: any[] = [];
+    const queryLocalizar = `
+        SELECT * FROM Eventos WHERE id = ?
+    `;
+    const evento = await new Promise<void>((resolve, reject) => {
+        db.get(queryLocalizar, [id], (erro, linha) => {
+            if (erro) {
+                console.error(`Erro ao localizar evento: ${erro}`);
+                reject(erro);
+            } else if (!linha) {
+                console.log('Evento não encontrado. Verifique se o ID está correto e tente novamente!');
+                resolve();
+            } else {
+                eventoExistente.push(linha);
+                resolve();
+            }
+        });
+    });
+    if (eventoExistente.length === 0) {
+        return;
+    }
+    let vamosEditar = {
+        nome: nome && nome.trim() ? nome : eventoExistente[0].nome,
+        data: data || eventoExistente[0].data,
+        usuario_ID: usuario_ID || eventoExistente[0].usuario_ID
+    };
+    let validar = eventoSchema.safeParse(vamosEditar);
+    if (!validar.success) {
+        validar.error.errors.forEach(e => console.log(e.message))
+        return;
+    }
+    
+    return new Promise<void>((resolve, reject) => {
+        const querySalvarEdicao = `
+            UPDATE Eventos
+            SET nome = ?, data = ?, usuario_ID = ?
+            WHERE id = ?
+        `;
+        db.run(querySalvarEdicao, [vamosEditar.nome, vamosEditar.data, vamosEditar.usuario_ID, id], async (erro) => {
+            if(erro) {
+                console.error(`Erro ao atualizar dados do Evento: ${erro}`);
+                reject(erro);
+            } else {
+                console.log('Evento Atualizado com sucesso!');
+                console.table(vamosEditar);
                 resolve();
             }
         });
@@ -105,11 +150,9 @@ export async function deletarEvento(id: number, usuario_logado_id: number): Prom
     return new Promise((resolve, reject) => {
         db.run(query, [id], async (erro) => {
             if (erro) {
-                await inserirLog(`Erro ao deletar evento de ID ${id}: ${erro.message}`, usuario_logado_id);
                 console.log(`Erro ao deletar evento: ${erro}`);
                 reject(erro);
             } else {
-                await inserirLog(`Deletando evento de ID ${id}! Usuario${usuarioLogado.nome}`,usuario_logado_id)
                 console.log(`Evento deletado com sucesso!`);
                 resolve();
             }
