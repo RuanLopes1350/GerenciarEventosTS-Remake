@@ -81,7 +81,11 @@ export async function cadastrarUsuario(nome: string, email: string, senha: strin
 
 export async function listarTodosUsuarios(usuario_logado_id: number): Promise<void> {
     const query = `
-    SELECT * FROM Usuarios;
+    SELECT 
+        id, 
+        nome, 
+        email 
+    FROM Usuarios;
     `;
     return new Promise((resolve, reject) => {
         db.all(query, async (erro, linhas) => {
@@ -98,7 +102,12 @@ export async function listarTodosUsuarios(usuario_logado_id: number): Promise<vo
 
 export async function localizarUsuario(id: number, usuario_logado_id: number): Promise<boolean> {
     const query = `
-    SELECT * FROM Usuarios WHERE id = ?
+    SELECT 
+        id, 
+        nome, 
+        email 
+    FROM Usuarios 
+    WHERE id = ?
     `;
     return new Promise((resolve, reject) => {
         db.get(query, [id], async (erro, linha) => {
