@@ -1,0 +1,23 @@
+[2025-02-16T07:33:30.022Z] INFO: Sistema Iniciado!
+[2025-02-16T07:33:52.512Z] INFO: Usuario ID: 1 - Nome: Administrador - Email: admin.master@email.com fez login no sistema!
+[2025-02-16T07:34:07.281Z] INFO: Menu Eventos acessado por: Administrador
+[2025-02-16T07:34:10.745Z] INFO: Menu Usuarios acessado por: Administrador
+[2025-02-16T07:34:41.911Z] INFO: Usuario Ruan Lopes cadastrado no banco por: Administrador - admin.master@email.com
+[2025-02-16T07:35:21.790Z] INFO: Usuario Luis Felipe cadastrado no banco por: Administrador - admin.master@email.com
+[2025-02-16T07:35:41.589Z] INFO: Usuario Silvio Huan cadastrado no banco por: Administrador - admin.master@email.com
+[2025-02-16T07:35:47.977Z] INFO: Usuario: Administrador se desligou do sistema!
+[2025-02-16T07:35:58.577Z] INFO: Evento Teste 1 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:35:58.615Z] INFO: Evento Teste 2 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:35:58.616Z] INFO: Evento Teste 3 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:35:58.617Z] INFO: Evento Teste 4 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:35:58.617Z] INFO: Evento Teste 5 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:36:07.900Z] INFO: Evento Teste 6 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:36:07.930Z] INFO: Evento Teste 7 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:36:07.931Z] INFO: Evento Teste 8 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:36:07.932Z] INFO: Evento Teste 9 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:36:07.934Z] INFO: Evento Teste 10 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-16T07:36:19.358Z] INFO: Sistema Iniciado!
+[2025-02-16T07:36:30.650Z] INFO: Usuario ID: 2 - Nome: Ruan Lopes - Email: ruan.lopes@email.com fez login no sistema!
+[2025-02-16T07:36:34.152Z] INFO: Menu Eventos acessado por: Ruan Lopes
+[2025-02-16T07:36:36.865Z] INFO: Listagem de Eventos! Usuario logado: 2 - Ruan Lopes
+[2025-02-16T07:36:46.872Z] INFO: Usuario: Ruan Lopes se desligou do sistema!

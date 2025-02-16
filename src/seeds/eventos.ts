@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker/locale/pt_BR';
 import sqlite3 from 'sqlite3';
 import { z } from 'zod';
+import { logger } from '../utils/logs';
 
 
 const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
@@ -43,6 +44,7 @@ const inserirEventosFakes = (quantidade: number) => {
       if (err) {
         console.error("Erro ao inserir evento:", err.message);
       } else {
+        logger.info(`Evento Teste ${this.lastID} inserido no banco através da Biblioteca Faker-JS!`)
         console.log(`Evento inserido com ID: ${this.lastID}`);
       }
     });

@@ -1,9 +1,10 @@
 import readline from 'readline';
 import * as fs from 'fs';
 import sqlite3, { Database } from "sqlite3";
-import { cadastrarUsuario, criarTabelaUsuario, deletarUsuario, listarTodosUsuarios, localizarUsuario, editarUsuario } from './database/Usuario';
-import { criarTabelaEventos, deletarEvento, editarEvento, inserirEvento, listarEventos, localizarEvento } from './database/Evento';
-import { logarNoBancoDeDados, usuarioLogado } from './database/Login';
+import { cadastrarUsuario, criarTabelaUsuario, deletarUsuario, listarTodosUsuarios, localizarUsuario, editarUsuario } from './utils/Usuario';
+import { criarTabelaEventos, deletarEvento, editarEvento, inserirEvento, listarEventos, localizarEvento } from './utils/Evento';
+import { logarNoBancoDeDados, usuarioLogado } from './utils/Login';
+import { logger } from './utils/logs';
 
 //criar diretório caso ele não exista!
 const directory = './data';
@@ -13,7 +14,7 @@ if (!fs.existsSync(directory)) {
 
 export const db = new sqlite3.Database('./data/BancoEventos.db')
 
-const rl = readline.createInterface({
+export const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
@@ -32,6 +33,7 @@ const main = async () => {
     //criar tabelas caso não existam ainda
     await criarTabelaUsuario();
     await criarTabelaEventos();
+    logger.info('Sistema Iniciado!')
     //fazer login no Banco
     let autorizado = await logarNoBancoDeDados();
     while (autorizado) {
@@ -44,6 +46,7 @@ const main = async () => {
 
         switch (escolher) {
             case '1':
+                logger.info(`Menu Eventos acessado por: ${usuarioLogado.nome}`)
                 //menu de Eventos
                 let menuEventosAtivo: boolean = true
                 while (menuEventosAtivo) {
@@ -60,26 +63,26 @@ const main = async () => {
                             //Cadastar novo Evento
                             const nomeEvento = await perguntar('Informe o nome do Evento: ');
                             const dataEvento = await perguntar('Informe a data do Evento: ');
-                            await inserirEvento(nomeEvento, dataEvento, usuarioLogado.id);
+                            await inserirEvento(nomeEvento, dataEvento);
                             break;
                         case '2':
                             //Listar os eventos
-                            await listarEventos(usuarioLogado.id);
+                            await listarEventos();
                             break;
                         case '3':
                             //Buscar evento por id
                             const idEventoBuscarString = await perguntar('Informe o ID do Evento que deseja buscar: ')
                             const idEventoBuscar = Number(idEventoBuscarString)
-                            await localizarEvento(idEventoBuscar, usuarioLogado.id)
+                            await localizarEvento(idEventoBuscar)
                             break;
                         case '4':
                             const idEventoAEditarString = await perguntar('Informe o ID do Evento que deseja editar: ')
                             const idEventoAEditar = Number(idEventoAEditarString)
-                            const eventoExiste: boolean = await localizarEvento(idEventoAEditar, usuarioLogado.id);
+                            const eventoExiste: boolean = await localizarEvento(idEventoAEditar);
                             if (eventoExiste) {
                                 const nomeEventoEditar = await perguntar('Informe o novo nome do Evento: ')
                                 const dataEventoEditar = await perguntar('Informe a nova data do Evento: ')
-                                await editarEvento(idEventoAEditar, nomeEventoEditar, dataEventoEditar, usuarioLogado.id, usuarioLogado.id)
+                                await editarEvento(idEventoAEditar, nomeEventoEditar, dataEventoEditar)
                             } else {
                                 console.log('Evento não encontrado. Verifique se o ID está correto e tente novamente!')
                             }
@@ -88,7 +91,7 @@ const main = async () => {
                             //excluir um evento
                             const idEventoDeletarString = await perguntar('Informe o ID do Evento que deseja deletar: ')
                             const idEventoDeletar = Number(idEventoDeletarString)
-                            await deletarEvento(idEventoDeletar, usuarioLogado.id)
+                            await deletarEvento(idEventoDeletar)
                             break;
                         case '6':
                             //retornar ao menu inicial
@@ -102,6 +105,7 @@ const main = async () => {
                 }
                 break;
             case '2':
+                logger.info(`Menu Usuarios acessado por: ${usuarioLogado.nome}`)
                 //menu de Usuarios
                 let menuUsuariosAtivo = true;
                 while (menuUsuariosAtivo) {
@@ -119,11 +123,11 @@ const main = async () => {
                             const nomeUsuario = await perguntar('Informe o nome do Usuario: ');
                             const emailUsuario = await perguntar('Informe o email do Usuario: ');
                             const senhaUsuario = await perguntar('Informe a senha do Usuario: ');
-                            await cadastrarUsuario(nomeUsuario, emailUsuario, senhaUsuario, usuarioLogado.id);
+                            await cadastrarUsuario(nomeUsuario, emailUsuario, senhaUsuario);
                             break;
                         case '2':
                             //Listar usuarios
-                            await listarTodosUsuarios(usuarioLogado.id);
+                            await listarTodosUsuarios();
                             break;
                         case '3':
                             //Buscar Usuario por id
@@ -168,6 +172,7 @@ const main = async () => {
                 break;
             case '3':
                 //encerrar execução e finalizar a ReadLine
+                logger.info(`Usuario: ${usuarioLogado.nome} se desligou do sistema!`)
                 autorizado = false;
                 console.log('Saindo...');
                 rl.close();

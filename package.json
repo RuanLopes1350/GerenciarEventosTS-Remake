@@ -18,9 +18,11 @@
     "@types/bcrypt": "^5.0.2",
     "@types/sqlite3": "^3.1.11",
     "bcrypt": "^5.1.1",
+    "rate-limiter-flexible": "^5.0.5",
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
+    "winston": "^3.17.0",
     "zod": "^3.24.2"
   }
 }

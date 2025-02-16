@@ -2,6 +2,8 @@ import { db } from ".."
 import { usuarioSchema } from "../validation/usuarios";
 import { usuarios } from "../interface/usuarios";
 import { gerarHashSenha } from "../security/senha";
+import { logger } from "./logs";
+import { usuarioLogado } from "./Login";
 
 //Criar a tabela de Usuarios
 export async function criarTabelaUsuario(): Promise<void> {
@@ -48,7 +50,7 @@ export async function criarTabelaUsuario(): Promise<void> {
     });
 }
 
-export async function cadastrarUsuario(nome: string, email: string, senha: string, usuario_logado_id: number) {
+export async function cadastrarUsuario(nome: string, email: string, senha: string) {
     let validar = usuarioSchema.safeParse({ nome, email, senha });
 
     if (nome.toLowerCase() === 'administrador' || nome.toLocaleLowerCase() === 'admin') {
@@ -68,9 +70,11 @@ export async function cadastrarUsuario(nome: string, email: string, senha: strin
     return new Promise<void>((resolve, reject) => {
         db.run(query, [nome, email, senhaHash], async (erro) => {
             if (erro) {
+                logger.error(`Erro ao tentar cadastrar email: ${email}! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email} \n${erro}`)
                 console.error(`Erro ao cadastrar Usuario: ${erro}`);
                 reject(erro);
             } else {
+                logger.info(`Usuario ${nome} cadastrado no banco por: ${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.log(`Usuario cadastrado com sucesso!`);
                 resolve();
             }
@@ -79,7 +83,7 @@ export async function cadastrarUsuario(nome: string, email: string, senha: strin
 
 }
 
-export async function listarTodosUsuarios(usuario_logado_id: number): Promise<void> {
+export async function listarTodosUsuarios(): Promise<void> {
     const query = `
     SELECT 
         id, 
@@ -90,9 +94,11 @@ export async function listarTodosUsuarios(usuario_logado_id: number): Promise<vo
     return new Promise((resolve, reject) => {
         db.all(query, async (erro, linhas) => {
             if (erro) {
-                console.log(`Erro ao listar Usuarios ${erro}`);
+                logger.error(`Erro ao listar usuarios! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email} \n${erro}`)
+                console.error(`Erro ao listar Usuarios ${erro}`);
                 reject(erro);
             } else {
+                logger.info(`Listagem de usuarios por: ${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.table(linhas);
                 resolve();
             }
@@ -112,9 +118,11 @@ export async function localizarUsuario(id: number, usuario_logado_id: number): P
     return new Promise((resolve, reject) => {
         db.get(query, [id], async (erro, linha) => {
             if (erro) {
-                console.log(`Erro ao listar Usuario: ${erro}`);
+                logger.error(`Erro ao buscar usuario! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email} \n${erro}`)
+                console.log(`Erro ao buscar Usuario: ${erro}`);
                 reject(erro);
             } else {
+                logger.info(`Busca por usuario de ID:${id} Usuario logado:${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.table(linha);
                 resolve(true);
             }
@@ -124,6 +132,7 @@ export async function localizarUsuario(id: number, usuario_logado_id: number): P
 
 export async function editarUsuario(id: number, nome: string, email: string, senha: string, usuario_logado_id: number): Promise<boolean> {
     if (id === 1) {
+        logger.warn(`Usuario ${usuarioLogado.nome} - ${usuarioLogado.email} tentou alterar credenciais administrativas!`)
         console.log(`Erro: Usuario protegido não pode ser editado!`);
         return false;
     }
@@ -135,12 +144,15 @@ export async function editarUsuario(id: number, nome: string, email: string, sen
     const usuario = await new Promise<void>((resolve, reject) => {
         db.get(queryLocalizar, [id], (erro, linha) => {
             if (erro) {
+                logger.error(`Erro ao editar dados de usuario ID:${id}! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email} \n${erro}`)
                 console.error(`Erro ao localizar usuario: ${erro}`);
                 reject(erro);
             } else if (!linha) {
+                logger.error(`Tentativa de localizar usuario inexistente! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.log('Usuario não encontrado. Verifique se o ID está correto e tente novamente!');
                 resolve();
             } else {
+                
                 usuarioExistente.push(linha);
                 resolve();
             }
@@ -178,9 +190,11 @@ export async function editarUsuario(id: number, nome: string, email: string, sen
         `;
         db.run(querySalvarEdicao, [vamosEditar.nome, vamosEditar.email, vamosEditar.senha, id], async (erro) => {
             if (erro) {
+                logger.error(`Tentativa de editar um usuario inexistente! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email} \n${erro}`)
                 console.error(`Erro ao atualizar dados do Usuario: ${erro}`);
                 reject(erro);
             } else {
+                logger.info(`Edição de dados do usuario ID ${id} ${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.log('Usuario Atualizado com sucesso!');
                 console.table(vamosEditar);
                 resolve(true);
@@ -191,6 +205,7 @@ export async function editarUsuario(id: number, nome: string, email: string, sen
 
 export async function deletarUsuario(id: number, usuario_logado_id: number): Promise<void> {
     if (id === 1) {
+        logger.warn(`Usuario ${usuarioLogado.nome} - ${usuarioLogado.email} tentou deletar usuario administrador!`)
         console.log(`Erro: Usuario protegido não pode ser deletado!`);
         return Promise.resolve();
     }
@@ -201,9 +216,11 @@ export async function deletarUsuario(id: number, usuario_logado_id: number): Pro
     return new Promise((resolve, reject) => {
         db.run(query, [id], async (erro) => {
             if (erro) {
+                logger.error(`Erro ao deletar usuario de ID:${id}! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.log(`Erro ao deletar Usuario: ${erro}`);
                 reject(erro);
             } else {
+                logger.info(`Usuario de ID:${id} deletado do banco! Usuario logado: ${usuarioLogado.nome} - ${usuarioLogado.email}`)
                 console.log(`Usuario deletado com sucesso!`);
                 resolve();
             }
