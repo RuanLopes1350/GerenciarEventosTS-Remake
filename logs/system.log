@@ -21,3 +21,40 @@
 [2025-02-16T07:36:34.152Z] INFO: Menu Eventos acessado por: Ruan Lopes
 [2025-02-16T07:36:36.865Z] INFO: Listagem de Eventos! Usuario logado: 2 - Ruan Lopes
 [2025-02-16T07:36:46.872Z] INFO: Usuario: Ruan Lopes se desligou do sistema!
+[2025-02-17T23:19:52.921Z] INFO: Sistema Iniciado!
+[2025-02-17T23:20:29.806Z] INFO: Usuario ID: 3 - Nome: Luis Felipe - Email: luis.felipe@email.com fez login no sistema!
+[2025-02-17T23:20:39.774Z] INFO: Menu Eventos acessado por: Luis Felipe
+[2025-02-17T23:20:48.606Z] INFO: Menu Usuarios acessado por: Luis Felipe
+[2025-02-17T23:20:50.351Z] INFO: Listagem de usuarios por: Luis Felipe - luis.felipe@email.com
+[2025-02-17T23:23:00.183Z] INFO: Usuario: Luis Felipe se desligou do sistema!
+[2025-02-17T23:23:11.466Z] INFO: Sistema Iniciado!
+[2025-02-17T23:23:26.354Z] INFO: Usuario ID: 2 - Nome: Ruan Lopes - Email: ruan.lopes@email.com fez login no sistema!
+[2025-02-17T23:24:27.097Z] INFO: Usuario: Ruan Lopes se desligou do sistema!
+[2025-02-17T23:24:29.756Z] INFO: Sistema Iniciado!
+[2025-02-17T23:25:06.442Z] WARN: Número máximo de tentativas de localizar email atingido! Sistema Encerrado!
+[2025-02-17T23:25:16.040Z] INFO: Sistema Iniciado!
+[2025-02-17T23:25:27.234Z] INFO: Usuario ID: 2 - Nome: Ruan Lopes - Email: ruan.lopes@email.com fez login no sistema!
+[2025-02-17T23:25:30.897Z] INFO: Menu Eventos acessado por: Ruan Lopes
+[2025-02-17T23:26:14.521Z] INFO: Evento abkfjw cadastrado! Usuario logado: 2 - Ruan Lopes
+[2025-02-17T23:26:22.322Z] INFO: Listagem de Eventos! Usuario logado: 2 - Ruan Lopes
+[2025-02-17T23:26:57.322Z] INFO: Menu Eventos acessado por: Ruan Lopes
+[2025-02-17T23:27:01.314Z] INFO: Evento de Evento ID:11! Usuario logado: 2 - Ruan Lopes
+[2025-02-17T23:27:12.658Z] INFO: Listagem de Eventos! Usuario logado: 2 - Ruan Lopes
+[2025-02-17T23:27:16.921Z] INFO: Menu Usuarios acessado por: Ruan Lopes
+[2025-02-17T23:27:58.725Z] INFO: Usuario Juaozinho cadastrado no banco por: Ruan Lopes - ruan.lopes@email.com
+[2025-02-17T23:28:01.507Z] INFO: Listagem de usuarios por: Ruan Lopes - ruan.lopes@email.com
+[2025-02-17T23:28:21.554Z] INFO: Usuario de ID:5 deletado do banco! Usuario logado: Ruan Lopes - ruan.lopes@email.com
+[2025-02-17T23:28:37.307Z] INFO: Busca por usuario de ID:3 Usuario logado:Ruan Lopes - ruan.lopes@email.com
+[2025-02-17T23:29:37.493Z] INFO: Edição de dados do usuario ID 3 Ruan Lopes - ruan.lopes@email.com
+[2025-02-17T23:29:58.539Z] INFO: Usuario: Ruan Lopes se desligou do sistema!
+[2025-02-17T23:41:13.112Z] INFO: Sistema Iniciado!
+[2025-02-18T00:14:04.269Z] INFO: Evento Teste 12 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-18T00:14:04.277Z] INFO: Evento Teste 13 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-18T00:14:04.277Z] INFO: Evento Teste 14 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-18T00:14:04.281Z] INFO: Evento Teste 15 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-18T00:14:04.285Z] INFO: Evento Teste 16 inserido no banco através da Biblioteca Faker-JS!
+[2025-02-18T00:42:27.972Z] INFO: Sistema Iniciado!
+[2025-02-18T00:42:48.415Z] INFO: Usuario ID: 2 - Nome: Ruan Lopes - Email: ruan.lopes@email.com fez login no sistema!
+[2025-02-18T00:42:49.896Z] INFO: Menu Eventos acessado por: Ruan Lopes
+[2025-02-18T00:42:55.634Z] INFO: Evento sbuda cadastrado! Usuario logado: 2 - Ruan Lopes
+[2025-02-18T00:43:16.840Z] INFO: Usuario: Ruan Lopes se desligou do sistema!

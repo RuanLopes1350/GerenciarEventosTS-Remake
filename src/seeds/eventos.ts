@@ -40,9 +40,9 @@ const inserirEventosFakes = (quantidade: number) => {
         `;
 
 
-    db.run(query, [nome, data, usuario_ID], function (err) {
-      if (err) {
-        console.error("Erro ao inserir evento:", err.message);
+    db.run(query, [nome, data, usuario_ID], function (erro) {
+      if (erro) {
+        console.error("Erro ao inserir evento:", erro.message);
       } else {
         logger.info(`Evento Teste ${this.lastID} inserido no banco através da Biblioteca Faker-JS!`)
         console.log(`Evento inserido com ID: ${this.lastID}`);

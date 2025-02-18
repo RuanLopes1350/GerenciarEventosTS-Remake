@@ -5,6 +5,7 @@ import { cadastrarUsuario, criarTabelaUsuario, deletarUsuario, listarTodosUsuari
 import { criarTabelaEventos, deletarEvento, editarEvento, inserirEvento, listarEventos, localizarEvento } from './utils/Evento';
 import { logarNoBancoDeDados, usuarioLogado } from './utils/Login';
 import { logger } from './utils/logs';
+import chalk from 'chalk';
 
 //criar diretório caso ele não exista!
 const directory = './data';
